@@ -34,5 +34,71 @@ Calculate Arithmetic Mean
 Evaluate Deviation against Max Variance
             ↓
 Return Status: STABLE / CRITICAL
+
+## 🚀 How to Run This Project
+
+Follow these steps to run the application locally.
+
+### 1. Clone the Repository
+
+```bash
+git clone [GITHUB REPOSITORY URL]
+cd aurvia-screening-app
+```
+
+### 2. Create a Virtual Environment
+
+```bash
+python -m venv venv
+```
+
+### 3. Activate the Virtual Environment
+
+**Windows:**
+
+```bash
+venv\Scripts\activate
+```
+
+**Linux/macOS:**
+
+```bash
+source venv/bin/activate
+```
+
+### 4. Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 5. Run the Application
+
+Start the FastAPI server:
+
+```bash
+uvicorn app:app --reload
+```
+
+### 6. Open the Application
+
+Open the following URL in your browser:
+
+```text
+http://127.0.0.1:8000/
+```
+
+The application uses a **single FastAPI process** to serve both the React frontend and the `/api/threshold` API.
+
+No separate React server, Vite server, frontend port, or frontend build command is required.
+
+### 7. Stop the Application
+
+To stop the development server, press:
+
+```text
+Ctrl + C
+```
+
             ↓
 Update React UI Badge Display
