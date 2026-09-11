@@ -35,7 +35,9 @@ Evaluate Deviation against Max Variance
             ↓
 Return Status: STABLE / CRITICAL
 
-## 🚀 How to Run This Project
+```
+
+🚀 How to Run This Project
 
 Follow these steps to run the application locally.
 
@@ -91,14 +93,5 @@ http://127.0.0.1:8000/
 The application uses a **single FastAPI process** to serve both the React frontend and the `/api/threshold` API.
 
 No separate React server, Vite server, frontend port, or frontend build command is required.
-
-### 7. Stop the Application
-
-To stop the development server, press:
-
-```text
-Ctrl + C
-```
-
             ↓
 Update React UI Badge Display
