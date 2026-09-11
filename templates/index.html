@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Threshold Verification</title>
+
+<!-- Google Fonts: Inter & JetBrains Mono -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+
+<!-- React + ReactDOM (production UMD builds) -->
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<!-- Babel standalone -->
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<style>
+  :root {
+    /* Light Theme Palette */
+    --bg: #F8FAFC;
+    --panel: #FFFFFF;
+    --panel-border: #E2E8F0;
+    --text-primary: #0F172A;
+    --text-muted: #64748B;
+
+    /* Cyan Accent (used selectively) */
+    --accent-cyan: #06B6D4;
+    --accent-cyan-hover: #0891B2;
+    --accent-cyan-glow: rgba(6, 182, 212, 0.25);
+
+    /* Statuses */
+    --status-stable: #10B981;
+    --status-stable-bg: #ECFDF5;
+    --status-stable-border: #A7F3D0;
+    --status-stable-text: #065F46;
+
+    --status-critical: #EF4444;
+    --status-critical-bg: #FEF2F2;
+    --status-critical-border: #FECACA;
+    --status-critical-text: #991B1B;
+
+    /* Typography */
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    height: 100%;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 16px;
+    text-align: center;
+  }
+
+  /* Single centered card container */
+  .card {
+    width: 100%;
+    max-width: 440px;
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 4px;
+    padding: 36px 32px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  /* Aurvia Logo: Cyan Accented */
+  .brand-mark {
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    background: var(--accent-cyan);
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+
+  .brand-name {
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--text-primary);
+  }
+
+  .card-heading {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 6px 0;
+    color: var(--text-primary);
+  }
+
+  .card-subtitle {
+    color: var(--text-muted);
+    font-size: 13.5px;
+    font-weight: 400;
+    margin-bottom: 20px;
+  }
+
+  form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  label {
+    display: block;
+    width: 100%;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    margin-top: 16px;
+    text-align: center;
+  }
+
+  input[type="text"], input[type="number"] {
+    width: 100%;
+    padding: 11px 14px;
+    border-radius: 3px;
+    border: 1px solid var(--panel-border);
+    background: #FFFFFF;
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    font-size: 13.5px;
+    font-weight: 500;
+    text-align: center;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  /* Input focus: cyan border and subtle glow */
+  input:focus {
+    border-color: var(--accent-cyan);
+    box-shadow: 0 0 0 2px var(--accent-cyan-glow);
+  }
+
+  .hint {
+    color: var(--text-muted);
+    font-size: 11.5px;
+    font-weight: 400;
+    margin-top: 6px;
+    text-align: center;
+  }
+
+  /* Primary Button */
+  button {
+    width: 100%;
+    margin-top: 24px;
+    padding: 12px 16px;
+    border-radius: 3px;
+    border: 1px solid var(--accent-cyan);
+    background: var(--accent-cyan);
+    color: #FFFFFF;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Button Hover Effect */
+  button:hover:not(:disabled) {
+    background: var(--accent-cyan-hover);
+    border-color: var(--accent-cyan-hover);
+    box-shadow: 0 4px 12px var(--accent-cyan-glow);
+    transform: translateY(-1px);
+  }
+
+  button:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: none;
+  }
+
+  button:disabled {
+    background: #E2E8F0;
+    border-color: #E2E8F0;
+    color: #94A3B8;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+  }
+
+  .spinner {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    border-top-color: #FFFFFF;
+    animation: spin 0.7s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .error-box {
+    width: 100%;
+    margin-top: 18px;
+    padding: 12px 14px;
+    border-radius: 3px;
+    background: var(--status-critical-bg);
+    border: 1px solid var(--status-critical-border);
+    color: var(--status-critical-text);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.5;
+    text-align: center;
+  }
+
+  .result-box {
+    width: 100%;
+    margin-top: 20px;
+    padding: 16px;
+    border-radius: 3px;
+    border: 1px solid;
+    font-size: 14px;
+    animation: fadeSlideIn 0.25s ease;
+  }
+
+  @keyframes fadeSlideIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .result-box.stable {
+    background: var(--status-stable-bg);
+    border-color: var(--status-stable-border);
+  }
+
+  .result-box.critical {
+    background: var(--status-critical-bg);
+    border-color: var(--status-critical-border);
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 2px;
+    font-family: var(--font-mono);
+    font-weight: 600;
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    margin-bottom: 12px;
+  }
+
+  .badge.stable {
+    background: var(--status-stable);
+    color: #FFFFFF;
+  }
+
+  .badge.critical {
+    background: var(--status-critical);
+    color: #FFFFFF;
+  }
+
+  .result-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    font-size: 13px;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+  }
+
+  .result-row:first-of-type {
+    border-top: none;
+  }
+
+  .result-label {
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  .result-value {
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    font-weight: 600;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .result-box, .spinner { animation: none; }
+    button { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState } = React;
+
+function App() {
+  const [rawValues, setRawValues] = useState("");
+  const [maxVariance, setMaxVariance] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [result, setResult] = useState(null);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  async function handleCheckMetrics(e) {
+    e.preventDefault();
+    if (isLoading) return;
+
+    setErrorMessage("");
+    setResult(null);
+
+    const parsedValues = rawValues
+      .split(",")
+      .map((segment) => segment.trim())
+      .filter((segment) => segment.length > 0)
+      .map((segment) => Number(segment));
+
+    const hasInvalidNumber = parsedValues.length === 0 || parsedValues.some((n) => Number.isNaN(n));
+    const parsedVariance = Number(maxVariance);
+
+    if (hasInvalidNumber) {
+      setErrorMessage("Please enter a comma-separated list of valid numbers.");
+      return;
+    }
+    if (maxVariance.trim() === "" || Number.isNaN(parsedVariance)) {
+      setErrorMessage("Please enter a valid numeric max variance.");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await fetch("/api/threshold", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          stream_values: parsedValues,
+          max_variance: parsedVariance,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setErrorMessage(data.detail || "The server rejected this request.");
+      } else {
+        setResult(data);
+      }
+    } catch (err) {
+      setErrorMessage("Could not reach the server. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  return (
+    <div className="card">
+      <div className="brand">
+        
+        <div className="brand-name">Variance Watch</div>
+      </div>
+
+      <div className="card-heading">Threshold Verification</div>
+      <div className="card-subtitle">Enter a Stream & Maximum Variance.</div>
+
+      <form onSubmit={handleCheckMetrics}>
+        <label htmlFor="values">Stream Values</label>
+        <input
+          id="values"
+          type="text"
+          value={rawValues}
+          onChange={(e) => setRawValues(e.target.value)}
+          placeholder=""
+        />
+
+        <label htmlFor="variance">Max Variance</label>
+        <input
+          id="variance"
+          type="number"
+          value={maxVariance}
+          onChange={(e) => setMaxVariance(e.target.value)}
+          placeholder=""
+        />
+    
+
+        <button type="submit" disabled={isLoading}>
+          {isLoading && <span className="spinner"></span>}
+          {isLoading ? "Checking..." : "Check Metrics"}
+        </button>
+      </form>
+
+      {errorMessage && <div className="error-box">{errorMessage}</div>}
+
+      {result && (
+        <div className={`result-box ${result.status === "STABLE" ? "stable" : "critical"}`}>
+          <span className={`badge ${result.status === "STABLE" ? "stable" : "critical"}`}>
+            {result.status}
+          </span>
+          <div className="result-row">
+            <span className="result-label">Average</span>
+            <span className="result-value">{result.average}</span>
+          </div>
+          <div className="result-row">
+            <span className="result-label">Max Variance</span>
+            <span className="result-value">{result.max_variance}</span>
+          </div>
+          <div className="result-row">
+            <span className="result-label">Data Points</span>
+            <span className="result-value">{result.count}</span>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+
+</body>
+</html>
