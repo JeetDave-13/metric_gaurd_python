@@ -93,5 +93,3 @@ http://127.0.0.1:8000/
 The application uses a **single FastAPI process** to serve both the React frontend and the `/api/threshold` API.
 
 No separate React server, Vite server, frontend port, or frontend build command is required.
-            ↓
-Update React UI Badge Display
